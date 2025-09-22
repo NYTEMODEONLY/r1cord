@@ -104,6 +104,44 @@ export default function Home() {
                 Learn More
               </Button>
             </div>
+
+            {/* QR Code Installation */}
+            <div className="mt-12 p-8 bg-black/20 rounded-2xl border border-purple-500/20">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-white mb-4">📱 Install on Rabbit R1</h3>
+                <p className="text-gray-300 mb-6">
+                  Scan this QR code with your Rabbit R1 camera to install r1cord directly on your device
+                </p>
+
+                {/* QR Code Display */}
+                <div className="flex justify-center mb-6">
+                  <div className="bg-white p-4 rounded-2xl shadow-2xl">
+                    <img
+                      src="/r1cord-install-qr.png"
+                      alt="Install r1cord on Rabbit R1"
+                      className="w-48 h-48 rounded-lg"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-yellow-200">
+                    <strong>⚠️ Untrusted Source Notice:</strong><br />
+                    This app is hosted on Vercel rather than Rabbit's servers.
+                    Only install if you trust the developer.
+                  </div>
+                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-blue-200">
+                    <strong>🔒 Security:</strong><br />
+                    Your Discord data is encrypted and secure.
+                    Review permissions before installing.
+                  </div>
+                </div>
+
+                <div className="mt-6 text-gray-400 text-sm">
+                  <p>Having trouble? Visit: <code className="bg-gray-800 px-2 py-1 rounded">r1cord.vercel.app/discord-client/</code></p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

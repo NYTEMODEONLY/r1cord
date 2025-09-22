@@ -1,0 +1,27 @@
+{
+  "name": "r1cord",
+  "version": "1.0.0",
+  "description": "Discord client optimized for Rabbit R1",
+  "author": "nytemode",
+  "main": "index.html",
+  "type": "web",
+  "permissions": [
+    "microphone",
+    "storage",
+    "network"
+  ],
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "launch_path": "/",
+  "developer": {
+    "name": "r1cord",
+    "url": "https://r1cord.vercel.app"
+  },
+  "untrusted_source": true,
+  "categories": ["communication", "social"],
+  "keywords": ["discord", "chat", "voice", "communication"]
+}

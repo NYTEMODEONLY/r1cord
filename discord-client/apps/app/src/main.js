@@ -27,6 +27,14 @@ class R1cordApp {
   async init() {
     console.log('Initializing r1cord');
 
+    // Check if this is the first time running as a creation
+    if (typeof window.creationStorage !== 'undefined') {
+      console.log('Running as Rabbit R1 Creation');
+      this.showWelcomeScreen();
+    } else {
+      console.log('Running in browser mode');
+    }
+
     // Check for authentication from URL parameters (OAuth callback)
     const urlParams = new URLSearchParams(window.location.search);
     const authToken = urlParams.get('auth');
@@ -58,16 +66,52 @@ class R1cordApp {
     }
   }
 
+  showWelcomeScreen() {
+    // Show welcome screen for first-time users
+    const hasSeenWelcome = localStorage.getItem('r1cord_welcome_seen');
+    if (!hasSeenWelcome) {
+      this.currentView = 'welcome';
+      console.log('Showing welcome screen for first-time user');
+    }
+  }
+
+  showUntrustedSourceWarning() {
+    this.currentView = 'untrusted-warning';
+    console.log('Showing untrusted source warning');
+  }
+
+  dismissUntrustedWarning() {
+    // Mark that user has seen the warning
+    if (window.creationStorage) {
+      window.creationStorage.plain.setItem('r1cord_untrusted_warning_seen', 'true');
+    } else {
+      localStorage.setItem('r1cord_untrusted_warning_seen', 'true');
+    }
+    this.currentView = 'welcome';
+    this.updateUI();
+  }
+
+  dismissWelcome() {
+    // Mark that user has seen the welcome screen
+    if (window.creationStorage) {
+      window.creationStorage.plain.setItem('r1cord_welcome_seen', 'true');
+    } else {
+      localStorage.setItem('r1cord_welcome_seen', 'true');
+    }
+    this.currentView = 'login';
+    this.updateUI();
+  }
+
   enableTestMode() {
     console.log('Test mode enabled - adding debug functions');
-    
+
     // Add global test functions for debugging
     window.testDiscordAuth = () => {
       console.log('Testing Discord OAuth2 flow...');
       this.authenticateWithDiscord();
     };
-    
-    
+
+
     window.testAPICall = async (endpoint) => {
       console.log('Testing API call to:', endpoint);
       try {
@@ -79,19 +123,19 @@ class R1cordApp {
         return null;
       }
     };
-    
+
     window.clearAuth = () => {
       console.log('Clearing authentication data...');
       this.clearStoredAuth();
       this.currentView = 'login';
       this.updateUI();
     };
-    
+
     window.showAuthURL = () => {
       console.log('OAuth2 flow now handled server-side at /api/auth/discord');
       return '/api/auth/discord';
     };
-    
+
     console.log('Test functions available:');
     console.log('- testDiscordAuth() - Start OAuth2 flow (redirects to server)');
     console.log('- testAPICall(endpoint) - Test API endpoint');
@@ -1324,11 +1368,15 @@ class R1cordApp {
     });
     
     // Show current screen/view
-    if (this.currentView === 'login') {
+    if (this.currentView === 'welcome') {
+      document.getElementById('welcome-screen').classList.add('active');
+    } else if (this.currentView === 'untrusted-warning') {
+      document.getElementById('untrusted-warning-screen').classList.add('active');
+    } else if (this.currentView === 'login') {
       document.getElementById('login-screen').classList.add('active');
     } else {
       document.getElementById('main-screen').classList.add('active');
-      document.getElementById(this.currentView === 'servers' ? 'server-list' : 
+      document.getElementById(this.currentView === 'servers' ? 'server-list' :
                              this.currentView === 'channels' ? 'channel-list' :
                              this.currentView === 'voice' ? 'voice-view' : 'text-view').classList.add('active');
     }
@@ -1484,6 +1532,26 @@ class R1cordApp {
   // ===========================================
 
   setupEventListeners() {
+    // Welcome screen button
+    document.getElementById('welcome-continue-btn').addEventListener('click', () => {
+      this.showUntrustedSourceWarning();
+    });
+
+    // Untrusted warning buttons
+    document.getElementById('untrusted-continue-btn').addEventListener('click', () => {
+      this.dismissUntrustedWarning();
+    });
+
+    document.getElementById('untrusted-cancel-btn').addEventListener('click', () => {
+      // Close the app or go back to installation
+      if (typeof window.creationClose !== 'undefined') {
+        window.creationClose();
+      } else {
+        // Fallback for browser testing
+        alert('Installation cancelled. You can close this page.');
+      }
+    });
+
     // Login button
     document.getElementById('login-btn').addEventListener('click', () => {
       this.authenticateWithDiscord();
