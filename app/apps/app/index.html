@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=240, height=320, user-scalable=no, initial-scale=1.0">
+    <title>r1cord</title>
+    <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <h1>r1cord</h1>
+            <p>Connect to your Discord servers</p>
+            <button id="login-btn" class="primary-btn">Login with Discord</button>
+            <div id="login-status" class="status-text"></div>
+        </div>
+
+        <!-- Main App Screen -->
+        <div id="main-screen" class="screen">
+            <div id="header">
+                <div id="user-info">
+                    <img id="user-avatar" src="" alt="Avatar" class="avatar">
+                    <span id="username"></span>
+                </div>
+                <div id="connection-status" class="status-indicator"></div>
+            </div>
+
+            <!-- Server List -->
+            <div id="server-list" class="view active">
+                <h2>Your Servers</h2>
+                <div id="servers-container" class="scrollable-list"></div>
+            </div>
+
+            <!-- Channel List -->
+            <div id="channel-list" class="view">
+                <div id="server-header">
+                    <button id="back-to-servers" class="back-btn">←</button>
+                    <span id="current-server-name"></span>
+                </div>
+                <div id="channels-container" class="scrollable-list"></div>
+            </div>
+
+            <!-- Voice Channel View -->
+            <div id="voice-view" class="view">
+                <div id="voice-header">
+                    <button id="back-to-channels" class="back-btn">←</button>
+                    <span id="current-voice-channel"></span>
+                </div>
+                <div id="voice-users" class="voice-users-list"></div>
+                <div id="voice-controls">
+                    <div id="ptt-status" class="ptt-indicator">Hold PTT to speak</div>
+                    <button id="leave-voice" class="danger-btn">Leave Voice</button>
+                </div>
+            </div>
+
+            <!-- Text Channel View -->
+            <div id="text-view" class="view">
+                <div id="text-header">
+                    <button id="back-to-channels-text" class="back-btn">←</button>
+                    <span id="current-text-channel"></span>
+                </div>
+                <div id="messages-container" class="scrollable-list"></div>
+                <div id="message-input-area">
+                    <div id="voice-input-status" class="voice-input-indicator">Hold PTT for voice message</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen">
+            <div class="loading-spinner"></div>
+            <p id="loading-text">Loading...</p>
+        </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
