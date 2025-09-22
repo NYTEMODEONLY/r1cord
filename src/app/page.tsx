@@ -8,6 +8,7 @@ import { MessageCircle, Users, Mic, Smartphone, Zap, Shield, Download, Github, T
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
+import Image from 'next/image'
 
 function FloatingDiscordLogo() {
   const meshRef = useRef<THREE.Mesh>(null)
@@ -116,10 +117,12 @@ export default function Home() {
                 {/* QR Code Display */}
                 <div className="flex justify-center mb-6">
                   <div className="bg-white p-4 rounded-2xl shadow-2xl">
-                    <img
+                    <Image
                       src="/r1cord-install-qr.png"
                       alt="Install r1cord on Rabbit R1"
-                      className="w-48 h-48 rounded-lg"
+                      width={192}
+                      height={192}
+                      className="rounded-lg"
                     />
                   </div>
                 </div>
@@ -127,7 +130,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center text-sm">
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 text-yellow-200">
                     <strong>⚠️ Untrusted Source Notice:</strong><br />
-                    This app is hosted on Vercel rather than Rabbit's servers.
+                    This app is hosted on Vercel rather than Rabbit servers.
                     Only install if you trust the developer.
                   </div>
                   <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 text-blue-200">
