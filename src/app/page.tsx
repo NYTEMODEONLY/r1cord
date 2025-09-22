@@ -123,6 +123,8 @@ export default function Home() {
                       width={192}
                       height={192}
                       className="rounded-lg"
+                      style={{ imageRendering: 'pixelated' }}
+                      unoptimized
                     />
                   </div>
                 </div>

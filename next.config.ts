@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
     formats: ['image/webp', 'image/avif'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    unoptimized: true, // Disable image optimization for QR codes and icons
   },
 
   // Compression and optimization
