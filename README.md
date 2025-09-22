@@ -1,8 +1,14 @@
 # r1cord
 
-A modern, responsive landing page built with Next.js and deployed on Vercel. This project showcases the power of modern web development with a clean, professional design.
+A multi-platform Discord client project for Rabbit R1, featuring both a modern web landing page and a desktop/mobile application.
 
-## 🚀 Features
+## 📁 Project Structure
+
+- **`src/app/`** - Next.js landing page (deployed to Vercel)
+- **`app/apps/app/`** - Discord client application for Rabbit R1
+- **`public/`** - Static assets for the landing page
+
+## 🚀 Landing Page Features
 
 - **Modern Design** - Clean, professional landing page with gradient styling
 - **Responsive** - Fully responsive design that works on all devices
@@ -10,6 +16,14 @@ A modern, responsive landing page built with Next.js and deployed on Vercel. Thi
 - **TypeScript** - Full type safety throughout the application
 - **Tailwind CSS** - Utility-first CSS framework for rapid UI development
 - **Vercel Ready** - Optimized for deployment on Vercel's global edge network
+
+## 💻 Discord Client App
+
+The `app/apps/app/` directory contains the Discord client application built for the Rabbit R1 device, featuring:
+- Cross-platform compatibility
+- Discord API integration
+- Custom UI components for Rabbit R1
+- Device-specific controls and features
 
 ## Getting Started
 

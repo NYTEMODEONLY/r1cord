@@ -68,6 +68,9 @@ jspm_packages/
 .nuxt
 dist
 
+# Discord client app (keep in repo but exclude from Vercel builds)
+app/
+
 # Gatsby files
 .cache/
 public
