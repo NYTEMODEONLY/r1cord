@@ -69,7 +69,7 @@ jspm_packages/
 dist
 
 # Discord client app (keep in repo but exclude from Vercel builds)
-app/
+discord-client/
 
 # Gatsby files
 .cache/

@@ -5,7 +5,7 @@ A multi-platform Discord client project for Rabbit R1, featuring both a modern w
 ## 📁 Project Structure
 
 - **`src/app/`** - Next.js landing page (deployed to Vercel)
-- **`app/apps/app/`** - Discord client application for Rabbit R1
+- **`discord-client/apps/app/`** - Discord client application for Rabbit R1
 - **`public/`** - Static assets for the landing page
 
 ## 🚀 Landing Page Features
@@ -19,7 +19,7 @@ A multi-platform Discord client project for Rabbit R1, featuring both a modern w
 
 ## 💻 Discord Client App
 
-The `app/apps/app/` directory contains the Discord client application built for the Rabbit R1 device, featuring:
+The `discord-client/apps/app/` directory contains the Discord client application built for the Rabbit R1 device, featuring:
 - Cross-platform compatibility
 - Discord API integration
 - Custom UI components for Rabbit R1
