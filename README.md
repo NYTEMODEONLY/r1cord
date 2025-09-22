@@ -1,21 +1,47 @@
-# r1cord
+# r1cord - Discord for Rabbit R1
 
-A multi-platform Discord client project for Rabbit R1, featuring both a modern web landing page and a desktop/mobile application.
+A comprehensive Discord client optimized specifically for the Rabbit R1 device, featuring a modern web landing page built with cutting-edge technologies.
+
+## 🎯 What is r1cord?
+
+r1cord is a Discord client specifically designed and optimized for the Rabbit R1 device. It provides the full Discord experience - text chat, voice calls, and server management - tailored for the R1's unique interface and hardware capabilities.
+
+## 🚀 Landing Page Features
+
+- **Modern Dark Design** - Discord-inspired dark theme with purple/blue gradients
+- **Three.js Animations** - Immersive floating Discord logo animation
+- **shadcn/ui Components** - Modern, accessible UI components
+- **R1-Optimized Content** - Features and messaging specifically for Rabbit R1 users
+- **Responsive Design** - Works perfectly on all devices and screen sizes
+- **Performance Optimized** - Built with Next.js 15 for maximum performance
+- **TypeScript** - Full type safety throughout the application
+- **Tailwind CSS** - Utility-first CSS framework for rapid UI development
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 15.5.3
+- **UI Library**: React 19.1.0
+- **Styling**: Tailwind CSS v4
+- **Components**: shadcn/ui
+- **Animations**: Three.js + React Three Fiber
+- **Icons**: Lucide React
+- **Type Safety**: TypeScript
 
 ## 📁 Project Structure
 
 - **`src/app/`** - Next.js landing page (deployed to Vercel)
+  - **`components/ui/`** - shadcn/ui component library
+  - **`lib/`** - Utility functions and configurations
 - **`discord-client/apps/app/`** - Discord client application for Rabbit R1
 - **`public/`** - Static assets for the landing page
 
-## 🚀 Landing Page Features
+## 🎨 Landing Page Sections
 
-- **Modern Design** - Clean, professional landing page with gradient styling
-- **Responsive** - Fully responsive design that works on all devices
-- **Performance Optimized** - Built with Next.js 15 for maximum performance
-- **TypeScript** - Full type safety throughout the application
-- **Tailwind CSS** - Utility-first CSS framework for rapid UI development
-- **Vercel Ready** - Optimized for deployment on Vercel's global edge network
+1. **Hero Section** - Eye-catching introduction with Three.js animations and clear value proposition
+2. **Features Section** - Highlighted capabilities (Text Chat, Voice Calls, Server Management)
+3. **Device Showcase** - R1-specific optimization details and terminal-style interface
+4. **Download Section** - Clear call-to-action with feature benefits
+5. **Footer** - Community links and project information
 
 ## 💻 Discord Client App
 

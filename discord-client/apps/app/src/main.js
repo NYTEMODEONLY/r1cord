@@ -25,18 +25,33 @@ class R1cordApp {
   }
 
   async init() {
-    console.log('Initializing r1cord with real OAuth2 credentials');
-    console.log('Client ID: 1419558895537492030');
-    
-    // Check for existing authentication
-    await this.loadStoredAuth();
-    
+    console.log('Initializing r1cord');
+
+    // Check for authentication from URL parameters (OAuth callback)
+    const urlParams = new URLSearchParams(window.location.search);
+    const authToken = urlParams.get('auth');
+    const error = urlParams.get('error');
+
+    if (authToken) {
+      // Handle OAuth callback
+      await this.handleAuthCallback(authToken);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (error) {
+      // Handle OAuth error
+      this.showError(`Authentication failed: ${error}`);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else {
+      // Check for existing authentication
+      await this.loadStoredAuth();
+    }
+
     // Setup event listeners
     this.setupEventListeners();
-    
+
     // Initialize UI
     this.updateUI();
-    
+
     // Add test mode for development
     if (window.location.hash === '#test') {
       this.enableTestMode();
@@ -52,10 +67,6 @@ class R1cordApp {
       this.authenticateWithDiscord();
     };
     
-    window.testTokenExchange = (code) => {
-      console.log('Testing token exchange with code:', code);
-      this.handleAuthorizationCode(code);
-    };
     
     window.testAPICall = async (endpoint) => {
       console.log('Testing API call to:', endpoint);
@@ -77,22 +88,15 @@ class R1cordApp {
     };
     
     window.showAuthURL = () => {
-      const clientId = '1419558895537492030';
-      const redirectUri = encodeURIComponent('urn:ietf:wg:oauth:2.0:oob');
-      const scope = encodeURIComponent('identify guilds guilds.members.read messages.read');
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&prompt=consent`;
-      
-      console.log('Discord OAuth2 Authorization URL:');
-      console.log(authUrl);
-      return authUrl;
+      console.log('OAuth2 flow now handled server-side at /api/auth/discord');
+      return '/api/auth/discord';
     };
     
     console.log('Test functions available:');
-    console.log('- testDiscordAuth() - Start OAuth2 flow');
-    console.log('- testTokenExchange(code) - Test with auth code');
+    console.log('- testDiscordAuth() - Start OAuth2 flow (redirects to server)');
     console.log('- testAPICall(endpoint) - Test API endpoint');
     console.log('- clearAuth() - Clear stored authentication');
-    console.log('- showAuthURL() - Show OAuth2 authorization URL');
+    console.log('- showAuthURL() - Show OAuth2 endpoint URL');
   }
 
   // ===========================================
@@ -176,157 +180,43 @@ class R1cordApp {
 
   async authenticateWithDiscord() {
     this.showLoading('Connecting to Discord...');
-    
+
     try {
-      // Real Discord OAuth2 configuration
-      const clientId = '1419558895537492030';
-      const clientSecret = 'naOnOrSbxIaCbAvIZ3dkWKc79hQ997LM';
-      const redirectUri = encodeURIComponent('urn:ietf:wg:oauth:2.0:oob'); // Out-of-band for R1
-      const scope = encodeURIComponent('identify guilds guilds.members.read messages.read');
-      
-      // Step 1: Generate Discord OAuth2 authorization URL
-      const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&prompt=consent`;
-      
-      if (typeof PluginMessageHandler !== 'undefined') {
-        // Use R1's system to handle the OAuth flow
-        PluginMessageHandler.postMessage(JSON.stringify({
-          message: `Please visit this Discord authorization URL to authenticate: ${authUrl}. After authorizing, you'll receive an authorization code. Return the code as JSON: {"authorization_code": "the_code_from_discord"}`,
-          useLLM: true,
-          wantsR1Response: true
-        }));
-        
-        // Store credentials for token exchange
-        this.discordCredentials = {
-          clientId,
-          clientSecret,
-          redirectUri: decodeURIComponent(redirectUri)
-        };
-        
-        // Wait for authorization code response
-        this.waitingForAuthCode = true;
-      } else {
-        // Browser fallback - open authorization URL
-        console.log('Authorization URL:', authUrl);
-        window.open(authUrl, '_blank');
-        
-        // Simulate receiving an auth code for testing
-        setTimeout(() => {
-          this.handleAuthorizationCode('mock_auth_code_' + Date.now());
-        }, 5000);
-      }
+      // Redirect to server-side OAuth flow
+      const authUrl = '/api/auth/discord';
+      window.location.href = authUrl;
     } catch (error) {
       console.error('Authentication failed:', error);
       this.showError('Authentication failed. Please try again.');
     }
   }
 
-  async handleAuthorizationCode(authCode) {
-    this.showLoading('Exchanging authorization code...');
-    
+
+  async handleAuthCallback(authToken) {
     try {
-      // Exchange authorization code for access token
-      const tokenResponse = await this.exchangeCodeForToken(authCode);
-      
-      if (tokenResponse.access_token) {
-        // Get user information with the access token
-        const userInfo = await this.fetchUserInfo(tokenResponse.access_token);
-        
-        this.handleAuthResponse({
-          success: true,
-          user: userInfo,
-          access_token: tokenResponse.access_token,
-          refresh_token: tokenResponse.refresh_token,
-          expires_in: tokenResponse.expires_in
-        });
-      } else {
-        throw new Error('No access token received');
+      // Decode the auth data from the server
+      const authData = JSON.parse(atob(authToken));
+
+      this.state.isAuthenticated = true;
+      this.state.user = authData.user;
+      this.state.accessToken = authData.access_token;
+      this.state.refreshToken = authData.refresh_token;
+      this.state.tokenExpiry = authData.token_expiry;
+
+      // Store authentication data
+      if (window.creationStorage) {
+        await window.creationStorage.plain.setItem('r1cord_auth', authToken);
       }
+
+      this.currentView = 'servers';
+      await this.loadServers();
+      this.updateUI();
+
+      console.log('Authentication successful:', this.state.user.username);
     } catch (error) {
-      console.error('Token exchange failed:', error);
-      this.showError('Token exchange failed. Please try again.');
+      console.error('Failed to handle auth callback:', error);
+      this.showError('Authentication failed: Invalid auth data');
     }
-  }
-
-  async exchangeCodeForToken(code) {
-    try {
-      // Real Discord OAuth2 token exchange
-      const tokenData = {
-        client_id: this.discordCredentials.clientId,
-        client_secret: this.discordCredentials.clientSecret,
-        grant_type: 'authorization_code',
-        code: code,
-        redirect_uri: this.discordCredentials.redirectUri
-      };
-
-      // Use R1's system to make the HTTP request
-      if (typeof PluginMessageHandler !== 'undefined') {
-        PluginMessageHandler.postMessage(JSON.stringify({
-          message: `Make a POST request to Discord token endpoint: https://discord.com/api/oauth2/token with form data: ${JSON.stringify(tokenData)}. Return the JSON response with access_token.`,
-          useLLM: true,
-          wantsR1Response: false
-        }));
-        
-        // For now, simulate the response structure
-        return await this.simulateTokenExchange(code);
-      } else {
-        // Browser fallback - would need CORS proxy in real implementation
-        return await this.simulateTokenExchange(code);
-      }
-    } catch (error) {
-      console.error('Token exchange error:', error);
-      throw error;
-    }
-  }
-
-  async simulateTokenExchange(code) {
-    // Simulate realistic token response for testing
-    // In production, this would be the actual Discord API response
-    return {
-      access_token: 'real_access_token_' + Date.now(),
-      token_type: 'Bearer',
-      expires_in: 604800,
-      refresh_token: 'real_refresh_token_' + Date.now(),
-      scope: 'identify guilds guilds.members.read messages.read'
-    };
-  }
-
-  async fetchUserInfo(accessToken) {
-    try {
-      // Real Discord API call to get user info
-      if (typeof PluginMessageHandler !== 'undefined') {
-        PluginMessageHandler.postMessage(JSON.stringify({
-          message: `Make a GET request to https://discord.com/api/users/@me with Authorization header: Bearer ${accessToken}. Return the user JSON data.`,
-          useLLM: true,
-          wantsR1Response: false
-        }));
-        
-        // For now, simulate the response
-        return await this.simulateUserInfo();
-      } else {
-        // Browser fallback
-        return await this.simulateUserInfo();
-      }
-    } catch (error) {
-      console.error('User info fetch error:', error);
-      throw error;
-    }
-  }
-
-  async simulateUserInfo() {
-    // Simulate realistic Discord user response
-    return {
-      id: Date.now().toString(),
-      username: 'R1User',
-      discriminator: '0001',
-      avatar: null,
-      verified: true,
-      email: 'r1user@example.com',
-      flags: 0,
-      premium_type: 0,
-      public_flags: 0,
-      locale: 'en-US',
-      mfa_enabled: false
-    };
   }
 
   async handleAuthResponse(response) {
@@ -336,7 +226,7 @@ class R1cordApp {
       this.state.accessToken = response.access_token;
       this.state.refreshToken = response.refresh_token;
       this.state.tokenExpiry = Date.now() + (response.expires_in * 1000);
-      
+
       // Store authentication data
       if (window.creationStorage) {
         const authData = btoa(JSON.stringify({
@@ -347,7 +237,7 @@ class R1cordApp {
         }));
         await window.creationStorage.plain.setItem('r1cord_auth', authData);
       }
-      
+
       this.currentView = 'servers';
       await this.loadServers();
       this.updateUI();
@@ -554,24 +444,37 @@ class R1cordApp {
         throw new Error('No refresh token available');
       }
 
-      const refreshData = {
-        client_id: '1419558895537492030',
-        client_secret: 'naOnOrSbxIaCbAvIZ3dkWKc79hQ997LM',
-        grant_type: 'refresh_token',
-        refresh_token: this.state.refreshToken
-      };
+      const response = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          refresh_token: this.state.refreshToken
+        }),
+      });
 
-      if (typeof PluginMessageHandler !== 'undefined') {
-        PluginMessageHandler.postMessage(JSON.stringify({
-          message: `Make POST request to https://discord.com/api/oauth2/token with form data: ${JSON.stringify(refreshData)}. Return the new token JSON.`,
-          useLLM: true,
-          wantsR1Response: false
-        }));
+      const refreshData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(`Token refresh failed: ${refreshData.error}`);
       }
 
-      // For now, simulate token refresh
-      this.state.accessToken = 'refreshed_token_' + Date.now();
-      this.state.tokenExpiry = Date.now() + (604800 * 1000); // 7 days
+      // Update tokens
+      this.state.accessToken = refreshData.access_token;
+      this.state.refreshToken = refreshData.refresh_token;
+      this.state.tokenExpiry = refreshData.token_expiry;
+
+      // Store updated authentication data
+      if (window.creationStorage) {
+        const authData = btoa(JSON.stringify({
+          user: this.state.user,
+          access_token: this.state.accessToken,
+          refresh_token: this.state.refreshToken,
+          token_expiry: this.state.tokenExpiry
+        }));
+        await window.creationStorage.plain.setItem('r1cord_auth', authData);
+      }
 
       console.log('Token refreshed successfully');
     } catch (error) {
