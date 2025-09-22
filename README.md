@@ -45,7 +45,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 For local development, create a `.env.local` file in the root directory with your environment variables:
 
 ```bash
-NEXT_PUBLIC_APP_NAME="Your App Name"
+NEXT_PUBLIC_APP_NAME="r1cord"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
@@ -55,10 +55,14 @@ For production deployment on Vercel, add these environment variables in your Ver
 2. Navigate to Settings → Environment Variables
 3. Add the following variables:
 
-- `NEXT_PUBLIC_APP_NAME` - Your application name
-- `NEXT_PUBLIC_APP_URL` - Your production domain
+- `NEXT_PUBLIC_APP_NAME` - Set to "r1cord"
+- `NEXT_PUBLIC_APP_URL` - Your production domain (e.g., https://r1cord.vercel.app)
 - `NEXT_PUBLIC_GA_ID` - Google Analytics ID (optional)
 - `NEXT_PUBLIC_API_URL` - Your API endpoint (if applicable)
+
+## Repository
+
+View the source code on [GitHub](https://github.com/NYTEMODEONLY/r1cord)
 
 ## Deploy on Vercel
 
